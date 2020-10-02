@@ -1,0 +1,95 @@
+fn print {
+n='
+'
+prompt = $"*$n . -i /dev/stdin >[2=1] <<!
+!
+}
+
+# puts $1 elements into $2.
+fn buf {
+    gg = ();
+    while(! ~ $#gg $1) gg = ($gg g);
+    # While the length of the gg is not $1, add one g to gg.
+    $2 = $gg
+}
+
+# think lisp, really
+fn + {
+    buf $1 a
+    buf $2 b
+    # Create buffers of lengths $1 and $2, store them in a and b.
+    result = ($a $b)
+    # Concatenate the buffers.
+    print $#result
+    # Print the length of the buffers.
+}
+
+fn - {
+    buf $1 tot
+    # Create a buffer in tot.
+    count = $2
+    # Store the amount we subtract by.
+    * = $tot
+    shift $count
+    # Set the positional parameters to the buffer, and then pop off count elements.
+    print $#*
+    # Print the length of what we have left.
+}
+
+fn x {
+    # multiply $1 by $2.
+    tot = 0
+    count = ()
+    while(! ~ $#count $2) {
+        buf $tot a
+        # Create a 'buffer', a, to hold gs of length $tot.
+        buf $1 b
+        # Do the same for $1.
+        c = ($a $b)
+        # Add them together.
+        tot = $#c
+        count = ($count m)
+        # Increment the counter by one. No ++ here.
+    }
+    print $tot
+}
+
+fn : {
+    # : is valid notation for division, and is acknowledged by ISO 80000-2.
+    # We can use it because it's not reserved for noop like in Unix shells.
+    # divide $1 by $2.
+    count = ()
+    dividend = $1
+    divisor = $2
+    buf $dividend tmp
+    # Create a buffer of the length of the dividend.
+    * = $tmp tmp = ()
+    # Set $* to the buffer, and unset the temporary buffer.
+    while (@ shift $divisor >[2]/dev/null) { 
+        shift $divisor
+        count = ($count m)
+    }
+    # @ denotes a subshell, which the shift runs in.
+    # We check if it succeeds via the while loop, and supress errors.
+    # It runs inside a subshell to account for a bug in the reimplementation of rc this was written in.
+    # The subshell ensures the same behaviour across implementations.
+    print $#count
+}
+
+fn % {
+    # divide $1 by $2.
+    dividend = $1
+    divisor = $2
+    buf $dividend tmp
+    # Create a buffer of the length of the dividend.
+    * = $tmp tmp = ()
+    # Set $* to the buffer, and unset the temporary buffer.
+    while (@ shift $divisor >[2]/dev/null) { 
+        shift $divisor
+    }
+    # @ denotes a subshell, which the shift runs in.
+    # We check if it succeeds via the while loop, and supress errors.
+    # It runs inside a subshell to account for a bug in the reimplementation of rc this was written in.
+    # The subshell ensures the same behaviour across implementations.
+    print $#*
+}
