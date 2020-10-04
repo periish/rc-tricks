@@ -5,9 +5,11 @@ Some snippets of code written in Plan 9's rc shell.
 ![Arithmetic demonstration](img/arithmetic.png)
 
 ### Functional Programming
+All functions in the `funcs` file, other than `buf`, `set` and `r` store the result of their operation in the variable `$R`. These functions are intended to provide similar functionality to that available in functional programming languages such as Haskell, OCaml and Lisp.
+
 `dedup` removes all duplication elements from an array.
 
-`r` outputs the return value of a function.
+`r` outputs the return value(`$R`) of a function.
 
 ![Deduplication demonstration](img/funcs-dedup.png)
 
