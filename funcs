@@ -1,0 +1,165 @@
+# puts $2 elements into $1.
+fn buf {
+    gg = ();
+    while(! ~ $#gg $2) gg = ($gg g);
+    # While the length of gg is not $2, add one g to gg.
+    $1 = $gg
+}
+
+# think lisp, really
+fn add {
+    buf a $1
+    buf b $2
+    # Create buffers of lengths $1 and $2, store them in a and b.
+    result = ($a $b)
+    # Concatenate the buffers.
+    R = $#result
+    # Print the length of the buffers.
+}
+
+fn sub {
+    buf tot $1
+    # Create a buffer in tot.
+    count = $2
+    # Store the amount we subtract by.
+    * = $tot
+    shift $count
+    # Set the positional parameters to the buffer, and then pop off count elements.
+    R = $#*
+}
+
+fn mult {
+    # multiply $1 by $2.
+    tot = 0
+    count = ()
+    while(! ~ $#count $2) {
+        buf a $tot
+        # Create a 'buffer', a, to hold gs of length $tot.
+        buf b $1
+        # Do the same for $1.
+        c = ($a $b)
+        # Add them together.
+        tot = $#c
+        count = ($count m)
+        # Increment the counter by one. No ++ here.
+    }
+    R = $tot
+}
+
+fn div {
+    # : is valid notation for division, and is acknowledged by ISO 80000-2.
+    # We can use it because it's not reserved for noop like in Unix shells.
+    # divide $1 by $2.
+    count = ()
+    dividend = $1
+    divisor = $2
+    buf tmp $dividend
+    # Create a buffer of the length of the dividend.
+    * = $tmp tmp = ()
+    # Set $* to the buffer, and unset the temporary buffer.
+    while (@ shift $divisor >[2]/dev/null) { 
+        shift $divisor
+        count = ($count m)
+    }
+    # @ denotes a subshell, which the shift runs in.
+    # We check if it succeeds via the while loop, and supress errors.
+    # It runs inside a subshell to account for a bug in the reimplementation of rc this was written in.
+    # The subshell ensures the same behaviour across implementations.
+    R = $#count
+}
+
+fn mod {
+    # divide $1 by $2.
+    dividend = $1
+    divisor = $2
+    buf tmp $dividend
+    # Create a buffer of the length of the dividend.
+    * = $tmp tmp = ()
+    # Set $* to the buffer, and unset the temporary buffer.
+    while (@ shift $divisor >[2]/dev/null) { 
+        shift $divisor
+    }
+    # @ denotes a subshell, which the shift runs in.
+    # We check if it succeeds via the while loop, and supress errors.
+    # It runs inside a subshell to account for a bug in the reimplementation of rc this was written in.
+    # The subshell ensures the same behaviour across implementations.
+    R = $#*
+}
+
+fn fold {
+    # Take an array, iterate through each element.
+    op = $1
+    tot = $2
+    shift 2
+    for (i in $*) {
+        $op $tot $i
+        tot = $R
+    }
+    R = $tot
+}
+
+fn map {
+    op = $1
+    shift 1
+    tot = ()
+    for (i) {
+        $op $i
+        tot = ($tot $R)
+    }
+    R = $tot
+}
+
+fn invert {
+    # Invert an array.
+    R = ()
+    for (i) R = ($i $R)
+}
+    
+fn dedup {
+    # Deduplicate an array.
+    seen = ()
+    for (i) ~ $i $seen || seen = ($seen $i)
+    R = $seen
+}
+
+fn filter {
+    op = $1
+    shift 1
+    tmp = ()
+    for (i) {
+        $op $i
+        if (~ $R true) tmp = ($tmp $i)
+    }
+    R = $tmp
+}
+
+# Some odd, annoying to categorise functions.
+fn r {
+    # Immediately output the returned value.
+    $*
+    echo $R
+}
+
+fn list {
+    # Alternate syntax for defining a list.
+    op = $1
+    shift 1
+    $op = $*
+}
+
+fn set {
+    # Set the contents of $1 to the $R of $2.
+    res = $1
+    shift 1
+    $* $$res
+    $res = $R
+}
+
+fn match {
+    # Match $1 against $2. Effectively ~, but it sets $R.
+    if (~ $1 $2) R = true
+    if not R = false
+}
+
+fn unset { for (i) $i = () }
+
