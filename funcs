@@ -133,6 +133,14 @@ fn filter {
     R = $tmp
 }
 
+fn first {
+    R = $1
+}
+
+fn last {
+    for(R)_
+}
+
 # Some odd, annoying to categorise functions.
 fn r {
     # Immediately output the returned value.
@@ -155,6 +163,13 @@ fn set {
     $res = $R
 }
 
+# A noop operation. Always sets status to 0.
+fn _{}
+
+# Replacements for /bin/false and /bin/true. Works the same, no path lookup!
+fn false {!}
+fn true {}
+
 fn match {
     # Match $1 against $2. Effectively ~, but it sets $R.
     if (~ $1 $2) R = true
@@ -162,4 +177,3 @@ fn match {
 }
 
 fn unset { for (i) $i = () }
-
