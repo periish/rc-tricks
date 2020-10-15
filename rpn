@@ -1,0 +1,97 @@
+#!/bin/rc
+
+# A reverse polish 'calculator'. Really, it can do whatever you want with the stack.
+# Written 'top-down' - the main function is at the top.
+
+enabled = (+ - . : % pop)
+
+fn %parse {
+    # An internal operator, prefixed with % to prevent collision.
+    for(n) {
+        if (~ $n $enabled) $n
+        if not push $n
+    }
+}
+
+fn %buf {
+    # An internal operator, prefixed with % to prevent collision.
+    gg = ()
+    while (!~ $1 $#gg) gg = (gg $gg)
+    $2 = $gg
+}
+
+# The most basic of operators.
+fn push {
+    stack = ($"* $stack)
+}
+
+fn pop {
+    '*' = $stack
+    shift 1
+    stack = $*
+}
+
+fn + {
+    %buf $stack(1) one
+    %buf $stack(2) two
+    res = ($one $two)
+    pop;pop
+    push $#res
+}
+
+fn - {
+    %buf $stack(2) one
+    '*' = $one
+    shift $stack(1)
+    pop;pop
+    push $#*
+}
+
+fn x {
+    tot = 0
+    count = ()
+    while(!~ $#count $stack(1)) {
+        %buf $tot a
+        %buf $stack(2) b
+        c = ($a $b)
+        tot = $#c
+        count = ($count m)
+    }
+    pop;pop
+    push $tot
+}
+
+fn . {
+    # No hacks here. This is portable.
+    echo $stack(1)
+}
+
+fn : {
+    count = ()
+    dividend =  $stack(2)
+    divisor = $stack(1)
+    %buf $dividend tmp
+    '*' = $tmp tmp = ()
+    while (@shift $divisor >[2]/dev/null) {
+        shift $divisor
+        count = ($count m)
+    }
+    pop;pop
+    push $#count
+}
+
+fn % {
+    count = ()
+    dividend =  $stack(2)
+    divisor = $stack(1)
+    %buf $dividend tmp
+    '*' = $tmp tmp = ()
+    while (@shift $divisor >[2]/dev/null) {
+        shift $divisor
+        count = ($count m)
+    }
+    pop;pop
+    push $#*
+}
+
+%parse $*
