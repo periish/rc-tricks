@@ -1,0 +1,24 @@
+#!/bin/rc
+
+# Evaluate functions into 'namespaces', akin to C++.
+
+
+fn use {
+    ~ $1 () && echo 'missing arguments'
+    ~ $2 as || echo 'missing as key word'
+
+    ns = $3
+    delim = ::
+    . $1
+
+    ifs = ('=' $nl) m = `{env}
+    for (i in $m) if (~ $i fn* && !~ $i fn*use) {
+        ifs = _ g = `{echo -n $i}
+
+        ifs=(' ' $nl)
+        '*' = `{whatis $g(2)}
+        shift 2
+        body = $*
+        eval fn $ns^$delim^$g(2) $body
+    }
+}

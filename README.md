@@ -32,3 +32,8 @@ All functions in the `funcs` file, other than `buf`, `set` and `r` store the res
 `map` runs a function on every element in an array, and returns the result.
 
 ![Map demonstration](img/funcs-map.png)
+
+### Use
+Use a file's functions in a 'namespace'!
+
+![Use demonstration(img/use.png)
