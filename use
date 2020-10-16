@@ -2,6 +2,8 @@
 
 # Evaluate functions into 'namespaces', akin to C++.
 
+nl='
+'
 
 fn use {
     ~ $1 () && echo 'missing arguments'
@@ -17,8 +19,10 @@ fn use {
 
         ifs=(' ' $nl)
         '*' = `{whatis $g(2)}
+        fn $g(2)
         shift 2
         body = $*
         eval fn $ns^$delim^$g(2) $body
     }
+    body = () m = () i = () ns = () delim = () g = ()
 }
