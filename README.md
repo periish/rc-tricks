@@ -36,4 +36,4 @@ All functions in the `funcs` file, other than `buf`, `set` and `r` store the res
 ### Use
 Use a file's functions in a 'namespace'!
 
-![Use demonstration(img/use.png)
+![Use demonstration](img/use.png)
